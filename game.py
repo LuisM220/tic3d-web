@@ -51,7 +51,7 @@ class TicTacToe3D:
         X, Y, Z = self.last_move
         for c in range(len(self.C)):
             direction = self.C[c]
-            win, cells = self._check_line(self.c[c], X, Y, Z)
+            win, cells = self._check_line(self.C[c], X, Y, Z)
             if win:
                 s = sum(self.board[z][y][x] for (x, y, z) in cells)
                 if s == -3:

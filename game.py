@@ -2,7 +2,7 @@
 
 class TicTacToe3D:
     def __init__(self):
-        self.board = [[[0 for _ in range(4)] for _ in range(4)] for _ in range(4)]
+        self.board = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(3)]
         self.current_player = -1  # -1 = X, 1 = O
         self.finished = False
         self.winner = None
@@ -17,7 +17,7 @@ class TicTacToe3D:
         ]
 
     def reset(self):
-        self.board = [[[0 for _ in range(4)] for _ in range(4)] for _ in range(4)]
+        self.board = [[[0 for _ in range(3)] for _ in range(3)] for _ in range(3)]
         self.current_player = -1
         self.finished = False
         self.winner = None

@@ -49,7 +49,8 @@ class TicTacToe3D:
 
     def check_winner(self):
         X, Y, Z = self.last_move
-        for c in range(len(self.c)):
+        for c in range(len(self.C)):
+            direction = self.C[c]
             win, cells = self._check_line(self.c[c], X, Y, Z)
             if win:
                 s = sum(self.board[z][y][x] for (x, y, z) in cells)

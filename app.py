@@ -6,7 +6,7 @@ from game import TicTacToe3D
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
-sio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
+sio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
 
 game = TicTacToe3D()
 

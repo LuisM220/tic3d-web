@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tic Tac Toe 3D</title>
+    <style>
+        table { border-collapse: collapse; margin: 10px; }
+        td { width: 40px; height: 40px; text-align: center; border: 1px solid black; }
+        a { text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe 3D</h1>
+    <p>Turno de: {{ current }}</p>
+    {% if winner %}
+        <h2>Ganador: {{ winner }}</h2>
+    {% endif %}
+    {% for z in range(3) %}
+        <h3>Capa z={{ z }}</h3>
+        <table>
+        {% for y in range(3) %}
+            <tr>
+            {% for x in range(3) %}
+                <td>
+                    {% set val = board[z][y][x] %}
+                    {% if val == 0 and not winner %}
+                        <a href="{{ url_for('move', x=x, y=y, z=z, player=current) }}">.</a>
+                    {% elif val == -1 %}
+                        X
+                    {% else %}
+                        O
+                    {% endif %}
+                </td>
+            {% endfor %}
+            </tr>
+        {% endfor %}
+        </table>
+    {% endfor %}
+    <a href="{{ url_for('reset') }}">Reset</a>
+</body>
+</html>

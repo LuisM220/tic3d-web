@@ -1,35 +1,30 @@
 # app.py
-import os
-from flask import Flask
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, request, redirect, url_for
 from game import TicTacToe3D
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret'
-sio = SocketIO(app, cors_allowed_origins="*", async_mode="threading")
-
-game = TicTacToe3D()
+juego = TicTacToe3D()
 
 @app.route("/")
 def index():
-    return "Servidor TicTacToe 3D en Render"
+    return render_template("board.html",
+                           board=juego.board,
+                           current="X" if juego.current_player == -1 else "O",
+                           winner=juego.winner)
 
-@sio.on("connect")
-def on_connect():
-    emit("update", {"board": game.board, "winner": game.winner, "next_player": 'X'})
+@app.route("/move")
+def move():
+    x = int(request.args.get("x"))
+    y = int(request.args.get("y"))
+    z = int(request.args.get("z"))
+    player = request.args.get("player")
+    juego.make_move(x,y,z,player)
+    return redirect(url_for("index"))
 
-@sio.on("move")
-def on_move(data):
-    x, y, z, player = data["x"], data["y"], data["z"], data["player"]
-    res = game.make_move(x, y, z, player)
-    if not res["valid"]:
-        emit("error", {"msg": res["error"]})
-    else:
-        sio.emit("update", res)
+@app.route("/reset")
+def reset():
+    juego.reset()
+    return redirect(url_for("index"))
 
-@sio.on("reset")
-def on_reset():
-    game.reset()
-    sio.emit("update", {"board": game.board, "winner": None, "next_player": 'X'})
-    if __name__ == "__main__":
-        sio.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)

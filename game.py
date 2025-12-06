@@ -59,7 +59,7 @@ class TicTacToe3D:
             return False, []
         if len(cells) != 3:
               return False, []
-      return True, cells
+        return True, cells
     
         return None, []
 

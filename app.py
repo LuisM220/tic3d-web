@@ -1,29 +1,28 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-
 from game import TicTacToe3D
 
 app = Flask(__name__)
 app.secret_key = "cambia_esta_clave_en_produccion"
 juego = TicTacToe3D()
 
-# Lista de sesiones activas
-active_sessions = {}
+# Contador de jugadores activos
+player_count = {"X": 0, "O": 0}
 
 def assign_player():
     if "player" in session:
         return session["player"]
 
-    # Contar cuántos jugadores ya están asignados
-    roles = list(active_sessions.values())
-    if "X" not in roles:
+    # Asignar X si no hay ninguno
+    if player_count["X"] == 0:
         session["player"] = "X"
-    elif "O" not in roles:
+        player_count["X"] += 1
+    # Asignar O si no hay ninguno
+    elif player_count["O"] == 0:
         session["player"] = "O"
+        player_count["O"] += 1
     else:
         session["player"] = "Spectator"
 
-    # Guardar sesión actual
-    active_sessions[session.sid] = session["player"]
     return session["player"]
 
 @app.route("/")
@@ -65,7 +64,8 @@ def move():
 def reset():
     juego.reset()
     session.pop("player", None)
-    active_sessions.clear()
+    player_count["X"] = 0
+    player_count["O"] = 0
     return redirect(url_for("index"))
 
 if __name__ == "__main__":

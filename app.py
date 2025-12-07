@@ -5,21 +5,19 @@ app = Flask(__name__)
 app.secret_key = "cambia_esta_clave_en_produccion"
 juego = TicTacToe3D()
 
-# Contador de jugadores activos
-player_count = {"X": 0, "O": 0}
-
 def assign_player():
     if "player" in session:
         return session["player"]
 
-    # Asignar X si no hay ninguno
-    if player_count["X"] == 0:
+    # Contar cuántos jugadores ya están asignados
+    players = [s.get("player") for s in session._get_current_object().values()] if session else []
+
+    # Si no hay nadie con X, asigna X
+    if "X" not in players:
         session["player"] = "X"
-        player_count["X"] += 1
-    # Asignar O si no hay ninguno
-    elif player_count["O"] == 0:
+    # Si no hay nadie con O, asigna O
+    elif "O" not in players:
         session["player"] = "O"
-        player_count["O"] += 1
     else:
         session["player"] = "Spectator"
 
@@ -63,9 +61,7 @@ def move():
 @app.route("/reset")
 def reset():
     juego.reset()
-    session.pop("player", None)
-    player_count["X"] = 0
-    player_count["O"] = 0
+    session.clear()  # 🔥 Borra el rol de este navegador
     return redirect(url_for("index"))
 
 if __name__ == "__main__":

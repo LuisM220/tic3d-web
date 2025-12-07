@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.secret_key = "cambia_esta_clave_en_produccion"
 juego = TicTacToe3D()
 
-# Roles ocupados (se mantiene mientras el servidor esté corriendo)
+# Variables globales para roles
 roles_ocupados = {"X": False, "O": False}
 
 def assign_player():
@@ -21,7 +21,8 @@ def assign_player():
         session["player"] = "O"
         roles_ocupados["O"] = True
     else:
-        session["player"] = "Spectator"
+        # 🔥 En lugar de espectador, volvemos a asignar X
+        session["player"] = "X"
 
     return session["player"]
 

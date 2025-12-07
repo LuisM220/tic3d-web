@@ -14,11 +14,14 @@ def index():
 
 @app.route("/move")
 def move():
+    if juego.finished:
+        return redirect(url_for("index"))
+
     x = int(request.args.get("x"))
     y = int(request.args.get("y"))
     z = int(request.args.get("z"))
-    player = request.args.get("player")
-    juego.make_move(x,y,z,player)
+    player = "X" if juego.current_player == -1 else "O"
+    juego.make_move(x, y, z)
     return redirect(url_for("index"))
 
 @app.route("/reset")

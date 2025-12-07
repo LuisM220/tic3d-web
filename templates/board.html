@@ -3,38 +3,77 @@
 <head>
     <title>Tic Tac Toe 3D</title>
     <style>
-        table { border-collapse: collapse; margin: 10px; }
-        td { width: 40px; height: 40px; text-align: center; border: 1px solid black; }
-        a { text-decoration: none; font-weight: bold; }
+        body {
+            font-family: Arial;
+            text-align: center;
+        }
+        .tablero {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            text-align: center;
+            border: 1px solid black;
+        }
+        a {
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .info {
+            margin-top: 10px;
+        }
     </style>
+    <script>
+        setInterval(() => {
+            fetch("/")
+                .then(response => response.text())
+                .then(html => {
+                    document.body.innerHTML = html;
+                });
+        }, 2000);
+    </script>
 </head>
 <body>
     <h1>Tic Tac Toe 3D</h1>
-    <p>Turno de: {{ current }}</p>
-    {% if winner %}
-        <h2>Ganador: {{ winner }}</h2>
-    {% endif %}
-    {% for z in range(3) %}
-        <h3>Capa z={{ z }}</h3>
-        <table>
-        {% for y in range(3) %}
-            <tr>
-            {% for x in range(3) %}
-                <td>
-                    {% set val = board[z][y][x] %}
-                    {% if val == 0 and not winner %}
-                        <a href="{{ url_for('move', x=x, y=y, z=z, player=current) }}">.</a>
-                    {% elif val == -1 %}
-                        X
-                    {% else %}
-                        O
-                    {% endif %}
-                </td>
-            {% endfor %}
-            </tr>
+    <div class="info">
+        <p>Turno de: {{ current }}</p>
+        {% if winner %}
+            <h2>Ganador: {{ winner }}</h2>
+        {% endif %}
+    </div>
+    <div class="tablero">
+        {% for z in range(3) %}
+            <div>
+                <h3>Capa z={{ z }}</h3>
+                <table>
+                {% for y in range(3) %}
+                    <tr>
+                    {% for x in range(3) %}
+                        <td>
+                            {% set val = board[z][y][x] %}
+                            {% if val == 0 and not winner %}
+                                <a href="{{ url_for('move', x=x, y=y, z=z) }}">.</a>
+                            {% elif val == -1 %}
+                                <span style="color: red;">X</span>
+                            {% else %}
+                                <span style="color: blue;">O</span>
+                            {% endif %}
+                        </td>
+                    {% endfor %}
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
         {% endfor %}
-        </table>
-    {% endfor %}
-    <a href="{{ url_for('reset') }}">Reset</a>
+    </div>
+    <p><a href="{{ url_for('reset') }}">🔁 Reset</a></p>
 </body>
 </html>

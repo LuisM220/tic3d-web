@@ -13,7 +13,7 @@
             align-items: center;
         }
         h1 { margin-top: 20px; }
-        .info { margin: 10px 0; }
+        .info { margin: 8px 0; text-align: center; }
         .tablero {
             display: flex;
             justify-content: center;
@@ -21,16 +21,11 @@
             margin-top: 10px;
             flex-wrap: wrap;
         }
-        .layer {
-            text-align: center;
-        }
-        table {
-            border-collapse: collapse;
-            margin: 0 auto;
-        }
+        .layer { text-align: center; }
+        table { border-collapse: collapse; margin: 0 auto; }
         td {
-            width: 48px;
-            height: 48px;
+            width: 52px;
+            height: 52px;
             font-size: 22px;
             text-align: center;
             border: 1px solid #333;
@@ -39,13 +34,16 @@
             display: inline-block;
             width: 100%;
             height: 100%;
-            line-height: 48px;
+            line-height: 52px;
             text-decoration: none;
             color: #555;
             font-weight: bold;
         }
         .x { color: #c62828; font-weight: bold; }   /* rojo */
         .o { color: #1565c0; font-weight: bold; }   /* azul */
+        .win {
+            background: #ffeb3b; /* resalta celdas ganadoras */
+        }
         .controls { margin: 16px 0; }
         .button {
             display: inline-block;
@@ -57,6 +55,15 @@
             background: #f5f5f5;
         }
         .button:hover { background: #eaeaea; }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: #fff;
+        }
+        .badge-turn { background: #2e7d32; }  /* verde cuando es tu turno */
+        .badge-wait { background: #b71c1c; }  /* rojo cuando no es tu turno */
     </style>
     <script>
         // Refresco automático cada 2 segundos para ver jugadas de otros usuarios
@@ -64,7 +71,6 @@
             fetch("/")
                 .then(response => response.text())
                 .then(html => {
-                    // Reemplaza el cuerpo completo para mantenerlo simple
                     document.open();
                     document.write(html);
                     document.close();
@@ -75,8 +81,15 @@
 </head>
 <body>
     <h1>Tic Tac Toe 3D</h1>
+
     <div class="info">
-        <p>Turno de: {{ current }}</p>
+        <p>Eres: <strong>{{ player }}</strong></p>
+        <p>Turno de: <strong>{{ current }}</strong></p>
+        {% if is_turn and not winner %}
+            <span class="badge badge-turn">Es tu turno</span>
+        {% elif not winner %}
+            <span class="badge badge-wait">Espera el turno</span>
+        {% endif %}
         {% if winner %}
             <h2>Ganador: {{ winner }}</h2>
         {% endif %}
@@ -90,14 +103,17 @@
                     {% for y in range(3) %}
                         <tr>
                             {% for x in range(3) %}
-                                <td>
-                                    {% set val = board[z][y][x] %}
-                                    {% if val == 0 and not winner %}
+                                {% set val = board[z][y][x] %}
+                                {% set is_win = (winning_cells and (x,y,z) in winning_cells) %}
+                                <td class="{{ 'win' if is_win }}">
+                                    {% if val == 0 and not winner and is_turn %}
                                         <a class="cell" href="{{ url_for('move', x=x, y=y, z=z) }}">.</a>
                                     {% elif val == -1 %}
                                         <span class="x">X</span>
-                                    {% else %}
+                                    {% elif val == 1 %}
                                         <span class="o">O</span>
+                                    {% else %}
+                                        <!-- vacío -->
                                     {% endif %}
                                 </td>
                             {% endfor %}

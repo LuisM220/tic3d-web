@@ -6,14 +6,22 @@ app = Flask(__name__)
 app.secret_key = "cambia_esta_clave_en_produccion"  # Necesario para sesiones
 juego = TicTacToe3D()
 
-# Control de asignación de roles fijos por sesión
+# Variables globales para asignar roles fijos
+assigned_roles = {"X": None, "O": None}
+
 def assign_player():
     if "player" not in session:
-        # Si nadie tiene X todavía, asigna X; si ya existe, asigna O
-        if juego.board == [[[0 for _ in range(3)] for _ in range(3)] for _ in range(3)] and juego.current_player == -1:
+        # Si no hay jugador X asignado, este navegador será X
+        if assigned_roles["X"] is None:
             session["player"] = "X"
-        else:
+            assigned_roles["X"] = True
+        # Si ya existe X, asigna O
+        elif assigned_roles["O"] is None:
             session["player"] = "O"
+            assigned_roles["O"] = True
+        else:
+            # Si ya hay dos jugadores, asigna espectador
+            session["player"] = "Spectator"
     return session["player"]
 
 @app.route("/")
@@ -39,7 +47,6 @@ def move():
     player = assign_player()
     current_symbol = 'X' if juego.current_player == -1 else 'O'
     if player != current_symbol:
-        # No es tu turno
         return redirect(url_for("index"))
 
     try:
@@ -55,7 +62,10 @@ def move():
 @app.route("/reset")
 def reset():
     juego.reset()
-    # 🔥 Mantener roles de sesión, no borrarlos
+    # 🔥 Reinicia roles para que se vuelvan a asignar en la próxima entrada
+    assigned_roles["X"] = None
+    assigned_roles["O"] = None
+    session.pop("player", None)
     return redirect(url_for("index"))
 
 if __name__ == "__main__":

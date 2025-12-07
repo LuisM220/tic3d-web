@@ -39,11 +39,9 @@
             color: #555;
             font-weight: bold;
         }
-        .x { color: #c62828; font-weight: bold; }   /* rojo */
-        .o { color: #1565c0; font-weight: bold; }   /* azul */
-        .win {
-            background: #ffeb3b; /* resalta celdas ganadoras */
-        }
+        .x { color: #c62828; font-weight: bold; }
+        .o { color: #1565c0; font-weight: bold; }
+        .win { background: #ffeb3b; }
         .controls { margin: 16px 0; }
         .button {
             display: inline-block;
@@ -55,18 +53,24 @@
             background: #f5f5f5;
         }
         .button:hover { background: #eaeaea; }
-        .badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 12px;
+
+        /* Etiqueta fija en esquina */
+        .corner-badge {
+            position: fixed;
+            right: 12px;          /* cambia a left:12px si la quieres a la izquierda */
+            bottom: 12px;         /* cambia a top:12px si la quieres arriba */
+            background: rgba(0,0,0,0.75);
             color: #fff;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+            z-index: 9999;
+            letter-spacing: 0.3px;
         }
-        .badge-turn { background: #2e7d32; }  /* verde cuando es tu turno */
-        .badge-wait { background: #b71c1c; }  /* rojo cuando no es tu turno */
     </style>
     <script>
-        // Refresco automático cada 2 segundos para ver jugadas de otros usuarios
+        // Refresco automático para ver jugadas del rival
         setInterval(() => {
             fetch("/")
                 .then(response => response.text())
@@ -86,9 +90,9 @@
         <p>Eres: <strong>{{ player }}</strong></p>
         <p>Turno de: <strong>{{ current }}</strong></p>
         {% if is_turn and not winner %}
-            <span class="badge badge-turn">Es tu turno</span>
+            <span style="background:#2e7d32;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;">Es tu turno</span>
         {% elif not winner %}
-            <span class="badge badge-wait">Espera el turno</span>
+            <span style="background:#b71c1c;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;">Espera el turno</span>
         {% endif %}
         {% if winner %}
             <h2>Ganador: {{ winner }}</h2>
@@ -112,8 +116,6 @@
                                         <span class="x">X</span>
                                     {% elif val == 1 %}
                                         <span class="o">O</span>
-                                    {% else %}
-                                        <!-- vacío -->
                                     {% endif %}
                                 </td>
                             {% endfor %}
@@ -126,6 +128,11 @@
 
     <div class="controls">
         <a class="button" href="{{ url_for('reset') }}">🔁 Reset</a>
+    </div>
+
+    <!-- Etiqueta de autor en esquina -->
+    <div class="corner-badge">
+        creado por <strong>Luis Morán</strong> &nbsp;&nbsp; 11R111
     </div>
 </body>
 </html>

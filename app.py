@@ -5,21 +5,21 @@ app = Flask(__name__)
 app.secret_key = "cambia_esta_clave_en_produccion"
 juego = TicTacToe3D()
 
-# Registro global de jugadores
-assigned_roles = []
+# Roles ocupados (se mantiene mientras el servidor esté corriendo)
+roles_ocupados = {"X": False, "O": False}
 
 def assign_player():
     if "player" in session:
         return session["player"]
 
-    # Asignar X si no está ocupado
-    if "X" not in assigned_roles:
+    # Asignar X si está libre
+    if not roles_ocupados["X"]:
         session["player"] = "X"
-        assigned_roles.append("X")
-    # Asignar O si no está ocupado
-    elif "O" not in assigned_roles:
+        roles_ocupados["X"] = True
+    # Asignar O si está libre
+    elif not roles_ocupados["O"]:
         session["player"] = "O"
-        assigned_roles.append("O")
+        roles_ocupados["O"] = True
     else:
         session["player"] = "Spectator"
 
@@ -63,8 +63,10 @@ def move():
 @app.route("/reset")
 def reset():
     juego.reset()
+    # Reinicia roles para que se reasignen en la próxima entrada
+    roles_ocupados["X"] = False
+    roles_ocupados["O"] = False
     session.pop("player", None)
-    assigned_roles.clear()  # 🔥 Reinicia roles globales
     return redirect(url_for("index"))
 
 if __name__ == "__main__":
